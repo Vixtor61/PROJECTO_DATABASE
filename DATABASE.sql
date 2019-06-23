@@ -13,7 +13,7 @@ CREATE TABLE hospital(
 	id INT NOT NULL,
 	nombre VARCHAR(20),
 	direccion VARCHAR(50),
-	telefono VARCHAR(8),
+	telefono VARCHAR(8) CHECK (telefono LIKE '\[276][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ESCAPE '\'),
 	id_municipio INT,
 	CONSTRAINT pk_hospital PRIMARY KEY (id),
 	CONSTRAINT fk_municipio FOREIGN KEY(id_municipio) REFERENCES municipio(id)
@@ -132,3 +132,4 @@ CREATE TABLE area(
 	);
 
 
+	
