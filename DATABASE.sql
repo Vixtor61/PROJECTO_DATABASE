@@ -192,7 +192,7 @@ INSERT INTO parametro([id],[nombre],[id_inspeccion]) VALUES(1,'Fusce Mollis Duis
 
 
 --PUTOS DE MEDICION
-INSERT INTO puntos_medicion([id],[nombre],[id_inspeccion]) VALUES(1,'Duis Mi Limited',1),(2,'Etiam Laoreet Libero Industries',40),(3,'Metus Vitae Velit PC',13),(4,'Eget Company',47),(5,'Arcu Aliquam Foundation',36),(6,'Donec At Arcu Company',18),(7,'Adipiscing Fringilla Limited',1),(8,'Phasellus Vitae Mauris Associates',16),(9,'A Purus Duis LLP',25),(10,'Magnis Dis Limited',38);
+INSERT INTO puntos_medicion([id],[nombre],[id_inspeccion]) VALUES(1,'R1',1),(2,'R2',40),(3,'R3',13),(4,'R4',47),(5,'R5',36),(6,'R6',18),(7,'R7',1),(8,'R8',16),(9,'R9',25),(10,'R10',38);
 
 --EQUIPO DE INSPECCION
 INSERT INTO equipo_inspeccion([no_serie],[nombre],[marca],[modelo],[fecha_calibracion],[certificado_calibracion]) VALUES(1,'Montes Incorporated','Imperdiet Nec Ltd','U6F 0A2','04/12/19','TZO11DGR8CB'),(2,'Rutrum Fusce Dolor Incorporated','Nunc Consulting','H1T 7G4','01/12/19','XDW33ZLR5VH'),(3,'Posuere Industries','Consectetuer Corp.','G2E 1V9','11/04/19','HLA45ARH6VW'),(4,'Cras Sed PC','Primis In Company','C1R 1B8','29/12/19','SNQ53KPR0LJ'),(5,'Tellus Non PC','Diam Pellentesque Habitant Incorporated','Q3F 9Z8','10/04/19','IMG26UKB9AH'),(6,'Ipsum Consulting','Congue In Associates','D7M 6Y9','12/03/19','LJX44OIO6ON'),(7,'Ut Tincidunt Orci Foundation','Suspendisse Sagittis Nullam Corp.','Z1U 0L2','12/11/18','KTI26XPL5MP'),(8,'Neque Inc.','Diam Lorem Auctor Incorporated','M3N 6K3','29/11/18','FFM35OVH4RI'),(9,'Egestas Nunc Sed Inc.','Felis Orci Adipiscing Institute','Z6I 6R1','30/04/19','XIW75ELM2DM'),(10,'Dolor Tempus Non Company','Luctus Aliquet Odio LLC','N0F 6F2','29/04/20','CPF04BJQ3CI');
@@ -213,57 +213,53 @@ INSERT INTO accesorios_ins([id],[nombre],[id_equipo_inspeccion]) VALUES(21,'Rutr
 INSERT INTO accesorios_ins([id],[nombre],[id_equipo_inspeccion]) VALUES(31,'Hendrerit Institute',12),(32,'Nulla Dignissim Maecenas Ltd',10),(33,'Mi Pede Nonummy Consulting',15),(34,'Vestibulum Accumsan Neque Foundation',13),(35,'Fermentum Arcu Foundation',14),(36,'Penatibus Foundation',14),(37,'Eu Elit Industries',5),(38,'Duis Volutpat Nunc Ltd',06),(39,'Elit Sed Consequat Corporation',3),(40,'Lectus Institute',19);
 
 -- TSQL
--- DECLARAMOS VARIABLES
+--1. FUNCION PARA VER EL MUNICIPIO DE CADA HOSPITAL
 
---FUNCIONES
---1. Funcion que retorna el municipio al que pertenece el hospital.
-
-CREATE FUNCTION GETMUNICIPIO(@id_hospital int)
-
+CREATE FUNCTION mostrarMunicipio(@id_hospital int)
 		RETURNS VARCHAR(35)
 		AS BEGIN 
 				DECLARE @municipio VARCHAR(35);
-				SELECT @municipio= m.municipio 
+				SELECT @municipio= m.nombre 
 				FROM MUNICIPIO m, HOSPITAL h
-				WHERE h.id_municipio=m.id_municipio
-										AND h.id_hospital=@id_hospital;
+				WHERE h.id_municipio=m.id
+				AND h.id = @id_hospital;
 			RETURN @municipio;
  		
 		END;
 
-SELECT h.id_hospital,h.nombre_hospital,h.direccion, [dbo].[GETMUNICIPIO](h.id_hospital) AS municipio
+SELECT h.id, h.nombre, h.direccion, [dbo].[mostrarMunicipio](h.id) AS municipio
 FROM HOSPITAL h;
 
 --2. Funcion que retorna el servicio hospitalario con el que cuenta el hospital
 
-CREATE FUNCTION GETSERVICIOHOSPITAL(@id_hospital int)
+drop function mostrarServicio
+CREATE FUNCTION mostrarServicio(@id_hospital int)
 
 		RETURNS VARCHAR(35)
 		AS BEGIN 
 				DECLARE @SERVICIO VARCHAR(35);
-				SELECT @SERVICIO= sh.nombre_servicio 
-				FROM SERVICIO_HOSP sh, HOSPITAL h
-				WHERE h.id_servicioHosp=sh.id_servicioHosp
-										AND h.id_hospital=@id_hospital;
+				SELECT @SERVICIO = a.servicio_hospitalario
+				FROM AREA a, HOSPITAL h
+--				WHERE h.id = a.id_hospital
 			RETURN @SERVICIO;
 			
 		END;
 
-SELECT h.id_hospital,h.nombre_hospital,h.direccion, [dbo].[GETSERVICIOHOSPITAL](h.id_hospital) AS Servicio_Hospitalario
-FROM HOSPITAL h;
+SELECT a.id, a.nombre as 'Nombre de Area', a.responsable, [dbo].[mostrarServicio](a.id) AS Servicio_Hospitalario
+FROM AREA a;
 
 --3. Procedimiento almacneado que consiste en mostrar cuantas areas tiene un hospital.
-
-CREATE PROCEDURE GETNUMAREA
-			@id_hospital VARCHAR(50)
+--PROCEDIMIENTO QUE MUESTRA LAS AREAS DEL HOSPITAL
+CREATE PROCEDURE GETNUMAREA 
+@id_hospital VARCHAR(50)
 			
 	AS BEGIN
 			DECLARE @cant_area INT;
-			SELECT @cant_area=COUNT (H.id_hospital)
+			SELECT @cant_inventario = COUNT (h.id)
 			FROM HOSPITAL h INNER JOIN AREA a
-			ON a.id_hospital=h.id_hospital
-								AND h.id_hospital=@id_hospital
-			GROUP BY h.id_hospital, H.nombre_hospital
+			ON a.id_hospital = h.id
+			AND h.id = @id_hospital
+			GROUP BY h.id, h.nombre;
 
 			IF @cant_area IS NULL
 				PRINT('EL HOSPITAL ' + CAST(@id_hospital AS VARCHAR(5)) + ' POSEE: ' + 'NINGUN AREA');
@@ -272,28 +268,28 @@ CREATE PROCEDURE GETNUMAREA
 				PRINT('EL HOSPITAL ' + CAST(@id_hospital AS VARCHAR(5)) + ' POSEE: ' + CAST(@cant_area AS VARCHAR(5)) + ' AREA/AS.');
 			END;
 			
-EXEC GETNUMAREA 7;
+EXEC GETNUMAREA 5;
 
 --4.Procedimiento almacenado que consiste en mostrar cuantas inspecciones ha realizado cada inspector.
-
+drop procedure GETCANTINSPECCIONES
 CREATE PROCEDURE GETCANTINSPECCIONES
-			@id_INSPECCION VARCHAR(50)
+@no_serie_equipo_inspeccion VARCHAR(10)
 			
 	AS BEGIN
-			DECLARE @cant_insp INT;
-			SELECT @cant_insp=COUNT (i.nombre_inspector)
-			FROM inspeccion i
-			WHERE i.id_inspeccion=@id_INSPECCION AND i.fecha_inspeccion BETWEEN '01/01/2018' AND '12/31/2018'
-			GROUP BY i.nombre_inspector;
+			DECLARE @no_serie int;
+			DECLARE @fecha_cal varchar(20);
+			SELECT @fecha_cal  = cast(ei.fecha_calibracion as date)
+			FROM equipo_inspeccion ei
+			WHERE ei.no_serie = @no_serie_equipo_inspeccion AND ei.fecha_calibracion BETWEEN '01/01/2018' AND '12/31/2018'
 			
-			IF @cant_insp IS NULL
-				PRINT('EL INSPECTOR ' + CAST(@id_INSPECCION AS VARCHAR(5)) + ', HA HECHO: ' + 'NINGUNA INSPECCION');
+			IF @fecha_cal IS NULL
+				PRINT('EL EQUIPO DE INSPECCION ' + CAST(@no_serie_equipo_inspeccion AS VARCHAR(8)) + ', NO HA TENIDO: ' + 'NINGUNA CALIBRACION');
 				
 			ELSE 
-				PRINT('EL INSPECTOR ' + CAST(@id_INSPECCION AS VARCHAR(5)) + ', HA HECHO: ' + CAST(@cant_INSP AS VARCHAR(5)) + ' INSPECCION/ES.');
+				PRINT('EL EQUIPO DE INSPECCION ' + CAST(@no_serie_equipo_inspeccion AS VARCHAR(8)) + ', RECIBIO CALIBRACION LA FECHA: ' + CAST(@fecha_cal AS varchar(20)) + ' CALIBRACION/ES.');
 			END;
 			
-EXEC GETCANTINSPECCIONES 17;
+EXEC GETCANTINSPECCIONES 12;
 
 
 
