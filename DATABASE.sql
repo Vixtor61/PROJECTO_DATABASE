@@ -1,5 +1,5 @@
-CREATE DATABASE proyecto
-use proyecto
+CREATE DATABASE proyecto;
+use proyecto;
 
 CREATE TABLE municipio(
 	id INT NOT NULL,
@@ -19,6 +19,23 @@ CREATE TABLE hospital(
 	CONSTRAINT fk_municipio FOREIGN KEY(id_municipio) REFERENCES municipio(id)
 	);
 
+
+CREATE TABLE clase_equipoMedico(
+	id INT NOT NULL,
+	nombre VARCHAR(20),
+	id_equipoMedico INT,
+	CONSTRAINT pk_claseEM PRIMARY KEY (id),
+	
+	);
+
+CREATE TABLE tipo_equipoMedico(
+	id INT NOT NULL,
+	nombre VARCHAR(20),
+	id_equipoMedico INT,
+	CONSTRAINT pk_tipoEM PRIMARY KEY (id),
+	
+	);
+
 CREATE TABLE equipo_medico(
 	numero_serie INT NOT NULL,
 	nombre VARCHAR(20),
@@ -26,7 +43,11 @@ CREATE TABLE equipo_medico(
 	modelo VARCHAR(20),
 	fecha_mantenimiento DATE,
 	numero_inventario INT,
-	CONSTRAINT pk_equipoMedico PRIMARY KEY (numero_serie)
+	id_clase_equipo_medico INT,
+	id_tipo_equipo_medico INT,
+	CONSTRAINT pk_equipoMedico PRIMARY KEY (numero_serie),
+	CONSTRAINT fk_clase_equipo_medico FOREIGN KEY(id_clase_equipo_medico) REFERENCES clase_equipoMedico(id),
+	CONSTRAINT fk_tipo_equipo_medico FOREIGN KEY(id_tipo_equipo_medico) REFERENCES tipo_equipoMedico(id)	
 	);
 
 CREATE TABLE accesorios_em(
@@ -35,22 +56,6 @@ CREATE TABLE accesorios_em(
 	id_equipoMedico INT,
 	CONSTRAINT pk_accesorios_em PRIMARY KEY (id),
 	CONSTRAINT fk_equipo_medico FOREIGN KEY(id_equipoMedico) REFERENCES equipo_medico(numero_serie)
-	);
-
-CREATE TABLE clase_equipoMedico(
-	id INT NOT NULL,
-	nombre VARCHAR(20),
-	id_equipoMedico INT,
-	CONSTRAINT pk_claseEM PRIMARY KEY (id),
-	CONSTRAINT fk__equipo_medico FOREIGN KEY(id_equipoMedico) REFERENCES equipo_medico(numero_serie)
-	);
-
-CREATE TABLE tipo_equipoMedico(
-	id INT NOT NULL,
-	nombre VARCHAR(20),
-	id_equipoMedico INT,
-	CONSTRAINT pk_tipoEM PRIMARY KEY (id),
-	CONSTRAINT fk_equipo__medico FOREIGN KEY(id_equipoMedico) REFERENCES equipo_medico(numero_serie)
 	);
 
 CREATE TABLE inspeccion(
@@ -148,9 +153,9 @@ INSERT INTO area([id],[nombre],[servicio_hospitalario],[responsable],[responsabl
 
 
 --EQUIPO MEDICO
-INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario]) VALUES(1,'A Foundation','Dictum Ltd','D7Q 9K4','04/06/19',9),(2,'Ornare LLP','Non Arcu Vivamus Institute','T7K 6G4','24/11/19',3),(3,'Nam Foundation','Donec Consectetuer Limited','P6M 7E5','09/02/19',8),(4,'Dolor Dolor Tempus Industries','Turpis Egestas Aliquam Corp.','Z0L 4S0','20/06/19',3),(5,'Quis Tristique Corp.','Netus Et Malesuada PC','M6E 1Z6','22/07/19',2),(6,'Feugiat Corporation','At Libero Foundation','J0W 6A8','20/02/19',9),(7,'Leo Morbi Neque Corp.','Orci Foundation','M3L 0X6','05/07/18',2),(8,'Non Corporation','In LLP','Z0S 2Y1','17/04/20',1),(9,'Orci Tincidunt Adipiscing Consulting','Nec Ante Ltd','F8Y 8J8','19/10/18',6),(10,'Enim Etiam Imperdiet Corporation','Elit Curabitur Sed Company','M0Y 3R1','22/03/20',8);
-INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario]) VALUES(11,'Imperdiet LLP','Congue Turpis In PC','B5T 7T8','07/07/19',10),(12,'Aliquam PC','Et Consulting','G3J 1R2','22/02/20',2),(13,'Non Nisi Aenean Industries','Tempor PC','G3G 8R1','23/06/18',10),(14,'Malesuada Fames Institute','Dui Fusce Diam Incorporated','G2O 1X4','11/12/18',2),(15,'Mauris Inc.','Sed Dictum Foundation','N6V 0O3','09/06/20',6),(16,'Senectus Et PC','Aliquam Auctor Limited','S4D 7M2','17/06/20',6),(17,'Nec Inc.','Amet Nulla Donec Associates','E2V 3E7','23/04/20',4),(18,'Bibendum Ullamcorper Institute','Molestie Sodales Mauris LLC','M9Q 4J9','04/12/18',2),(19,'Et Commodo At LLC','Nulla In PC','Y5F 9Y4','01/06/19',3),(20,'Non Institute','Magna Ltd','O8Z 0G0','11/06/19',9);
-INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario]) VALUES(21,'Consectetuer Limited','Fringilla Mi Lacinia Industries','L4S 4Y6','11/07/19',3),(22,'Non Sollicitudin A Company','Dignissim Magna A Corporation','G7V 9U5','05/08/19',1),(23,'Suspendisse Tristique Company','Dui Cum Consulting','U4Q 7O2','26/10/19',10),(24,'Aenean Corporation','Et Netus LLP','Q6T 4B2','11/08/19',7),(25,'Dolor Tempus Non Foundation','Interdum Enim Non Institute','P9E 3W8','25/03/20',5),(26,'Mi Lacinia Limited','Nibh Phasellus Corporation','H9O 5Y5','27/05/19',9),(27,'Fringilla Est Consulting','Erat PC','K7K 8B8','12/06/20',2),(28,'A LLP','A Auctor Non Ltd','G0Q 3T2','13/09/19',7),(29,'Non Lobortis Inc.','Porttitor Tellus Ltd','S4B 2Z9','20/02/19',3),(30,'Consequat Limited','At Industries','I8O 6R5','06/09/19',7);
+INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario],[id_clase_equipo_medico],[id_tipo_equipo_medico]) VALUES(1,'Nibh Ltd','Ac Metus PC','Q6B 5T4','18/01/20',6,1,3),(2,'Enim Corporation','Mi Company','H3Y 5I7','28/07/19',6,2,3),(3,'Arcu Vestibulum Industries','Dictum Incorporated','A0M 7B9','30/09/18',7,2,1),(4,'In Dolor Fusce Corporation','Risus Odio Ltd','P8D 2S3','11/08/19',7,1,1),(5,'Id Magna Foundation','Et Netus Et Institute','I8L 6O2','21/06/20',4,2,2),(6,'Egestas Company','Est Arcu Ac Ltd','N3H 8T2','26/09/18',1,1,3),(7,'Quis LLP','Orci Ltd','R1W 7L7','16/11/19',1,2,2),(8,'Mollis Lectus LLP','Curabitur Consequat Lectus Consulting','P3N 0B2','17/12/18',6,2,2),(9,'Varius Corporation','Felis Donec Limited','P1T 7O9','14/05/20',7,1,1),(10,'Ligula Donec Luctus LLP','Erat Associates','J0J 3Z6','01/05/20',8,2,2);
+INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario],[id_clase_equipo_medico],[id_tipo_equipo_medico]) VALUES(11,'Tristique Inc.','Ipsum Phasellus Vitae LLC','E3Y 1B0','05/03/19',5,1,3),(12,'Vestibulum Consulting','Eu Turpis Nulla Ltd','A5W 1C0','14/05/20',2,1,3),(13,'Dapibus Id Blandit PC','Ipsum Ac Mi PC','W1A 0G0','28/02/19',5,1,3),(14,'Aliquet Magna Foundation','Magnis Dis Parturient Inc.','O1T 5N5','18/08/19',1,1,3),(15,'Fringilla Cursus Purus Corp.','Libero Institute','P4S 6O7','04/01/20',2,1,2),(16,'Facilisis Facilisis Magna Limited','Egestas Incorporated','U2H 5O7','23/06/20',4,1,2),(17,'Etiam Laoreet PC','Et Malesuada Fames Consulting','U6R 8E5','12/05/19',4,2,3),(18,'Urna Suscipit Nonummy Limited','Suspendisse Ltd','X3B 7I7','19/08/19',5,2,2),(19,'Malesuada Fames Ac Incorporated','Nibh Consulting','S6Q 7X6','17/02/20',5,2,1),(20,'Nec Tempus Mauris Industries','Libero Proin Foundation','C8D 8X3','02/11/18',7,1,2);
+INSERT INTO equipo_medico([numero_serie],[nombre],[marca],[modelo],[fecha_mantenimiento],[numero_inventario],[id_clase_equipo_medico],[id_tipo_equipo_medico]) VALUES(21,'Risus LLC','Mauris Sagittis Ltd','R7S 4V7','01/03/19',3,2,2),(22,'Sit Amet Consectetuer LLC','Nec Enim Incorporated','M2I 7X7','14/04/20',9,2,2),(23,'Suspendisse Institute','Auctor LLP','X2X 2E5','30/09/19',8,1,1),(24,'Fames PC','At Consulting','V2N 6Q1','07/02/19',8,2,3),(25,'Consequat Consulting','Et Arcu Corp.','C0M 1N2','17/09/18',2,2,1),(26,'Urna Justo Limited','Vestibulum Corporation','S5L 1Y0','14/10/18',8,1,3),(27,'Aenean Corp.','Dis Parturient Incorporated','L7Y 5D8','21/01/20',6,2,1),(28,'Arcu Eu Inc.','Aliquet Lobortis Nisi LLP','C8Z 2V9','26/04/19',1,1,3),(29,'Malesuada Limited','Erat Eget Ipsum Inc.','L9D 6L1','18/04/19',4,1,2),(30,'Convallis Ltd','Malesuada Foundation','Q8J 3X3','05/04/20',1,2,1);
 
 
 --ACCESORIOS EQUIPO MEDICO
@@ -160,9 +165,11 @@ INSERT INTO accesorios_em([id],[nombre],[id_equipoMedico]) VALUES(21,'Vitae Orci
 INSERT INTO accesorios_em([id],[nombre],[id_equipoMedico]) VALUES(31,'In Tincidunt Congue Consulting',9),(32,'Auctor Ullamcorper Nisl Corporation',28),(33,'Feugiat Tellus PC',29),(34,'Nonummy Company',6),(35,'Eu Nulla At Industries',3),(36,'Ac Risus LLP',27),(37,'Ullamcorper Consulting',2),(38,'Dui Lectus Rutrum Foundation',10),(39,'Nullam LLC',22),(40,'Dictum Ultricies Ligula Corporation',5);
 
 --CLASE EQUIPO MEDICO
+INSERT INTO clase_equipoMedico([id],[nombre]) VALUES(1,'I'),(2,'II');
 
 
 --TIPO EQUIPO MEDICO
+INSERT INTO tipo_equipoMedico([id],[nombre]) VALUES(1,'B'),(2,'BF'),(1,'CF');
 
 
 --EMXINS
@@ -207,10 +214,7 @@ INSERT INTO accesorios_ins([id],[nombre],[id_equipo_inspeccion]) VALUES(21,'Rutr
 INSERT INTO accesorios_ins([id],[nombre],[id_equipo_inspeccion]) VALUES(31,'Hendrerit Institute',12),(32,'Nulla Dignissim Maecenas Ltd',10),(33,'Mi Pede Nonummy Consulting',15),(34,'Vestibulum Accumsan Neque Foundation',13),(35,'Fermentum Arcu Foundation',14),(36,'Penatibus Foundation',14),(37,'Eu Elit Industries',5),(38,'Duis Volutpat Nunc Ltd',06),(39,'Elit Sed Consequat Corporation',3),(40,'Lectus Institute',19);
 
 -- TSQL
-
-
-
-
+-- DECLARAMOS VARIABLES
 
 
 
